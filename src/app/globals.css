@@ -3,6 +3,31 @@
 :root {
   --background: #ffffff;
   --foreground: #171717;
+   --font-sans: "MyCustomFont", sans-serif;
+}
+
+@font-face {
+  font-family: "MyCustomFont";
+  src: url("/fonts/Byekan.ttf") format("ttf"),
+       url("/fonts/ByekanBold.ttf") format("ttf");
+  font-weight: normal;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  --color-switcher: #C99E38;
+  --color-switcher2: #FFF9F1;
+  --color-goldPriceCard: #FFFCF4;
+  --color-customText: #333333;
+  --color-customText2: #212121;
+  --color-customText3: #7D7E7F;
+  --color-rial: #666666;
+  --color-rialBg: #FBFBFB;
+  --color-border: #E4E7E8;
+  --color-btnDisable: #D7DEE0;
+  --color-readable: #ABA8B2;
+  --color-err: #F03535;
 }
 
 @theme inline {
@@ -22,5 +47,11 @@
 body {
   background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+   font-family: var(--font-sans);
+}
+
+input[type=number]::-webkit-inner-spin-button, 
+input[type=number]::-webkit-outer-spin-button { 
+  -webkit-appearance: none; 
+  margin: 0; 
 }
