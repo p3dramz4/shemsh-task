@@ -12,6 +12,7 @@ import {
   numberToReadableToman,
   numberToReadableGram,
 } from "../utils/numberToReadable";
+import { getTotalWithFee, extractAmountWithoutFee } from "../utils/fee";
 
 export default function GoldInputs() {
   const { rialAmount, goldAmount, goldPrice, updateRial, updateGold } =
@@ -33,8 +34,10 @@ export default function GoldInputs() {
 
   const handleRialChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-    const cleaned = removeCommas(persianToEnglishDigits(raw));
+     const cleaned = persianToEnglishDigits(raw).replace(/[^0-9]/g, "");
     const parsed = parseInt(cleaned.replace(/,/g, ""), 10);
+
+    if (!/^[\d۰-۹]*$/.test(raw)) return;
 
     if (!isNaN(parsed)) {
       setRialInput(formatToPersian(parsed));
@@ -42,10 +45,12 @@ export default function GoldInputs() {
       if (debounceTimeout) clearTimeout(debounceTimeout);
 
       const timeout = setTimeout(() => {
+        const rialWithoutFee = extractAmountWithoutFee(parsed);
+
         if (goldPrice > 0) {
-          const gold = Math.floor(parsed / goldPrice);
-          const adjustedRial = gold * goldPrice;
-          updateRial(adjustedRial); 
+          const gold = Math.floor(rialWithoutFee / goldPrice);
+          updateRial(rialWithoutFee);
+          updateGold(gold);
         }
       }, 1000);
 
@@ -57,8 +62,10 @@ export default function GoldInputs() {
 
   const handleGoldChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value;
-    const cleaned = removeCommas(persianToEnglishDigits(raw));
+     const cleaned = persianToEnglishDigits(raw).replace(/[^0-9]/g, "");
     const parsedGold = parseFloat(cleaned.replace(/,/g, ""));
+
+    if (!/^[\d۰-۹]*$/.test(raw)) return;
 
     if (!isNaN(parsedGold)) {
       updateGold(parsedGold);
@@ -67,6 +74,8 @@ export default function GoldInputs() {
       setGoldInput(formatToPersian(parsedGold));
     } else {
       setGoldInput(raw);
+       updateGold(0);
+       updateRial(0);
     }
   };
 
@@ -77,13 +86,22 @@ export default function GoldInputs() {
   useEffect(() => {
     setGoldInput(goldAmount > 0 ? formatToPersian(goldAmount) : "");
   }, [goldAmount]);
-  
+
+ useEffect(() => {
+   if (goldAmount > 0 && goldPrice > 0) {
+     const rawRial = Math.floor(goldAmount * goldPrice);
+     const withFee = getTotalWithFee(rawRial);
+     setRialInput(formatToPersian(withFee));
+     updateRial(rawRial); 
+   }
+ }, [goldPrice, goldAmount]);
+
 
   return (
     <>
       <div className="relative">
         <label className="block mb-2 text-[12px] text-customText2 text-right">
-          مبلغ پرداختی بدون احتساب کارمزد
+          مبلغ پرداختی با احتساب کارمزد
         </label>
         <div className="relative flex items-center">
           <input
@@ -92,7 +110,7 @@ export default function GoldInputs() {
             inputMode="numeric"
             onChange={handleRialChange}
             value={rialInput}
-            className="font-serif w-full h-[42px] text-[14px] font-medium border text-zinc-700 border-gray-300 rounded-lg p-3 text-right focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:text-zinc-800"
+            className="font-serif w-full h-[42px] text-[14px] font-bold border text-zinc-700 border-gray-300 rounded-lg p-3 text-right focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:text-zinc-800"
             name="amount"
             data-gtm-form-interact-field-id="2"
             placeholder="۰"
@@ -125,11 +143,12 @@ export default function GoldInputs() {
             inputMode="numeric"
             value={goldInput}
             onChange={handleGoldChange}
-            className="w-full font-serif text-[14px] h-[42px] font-medium border text-zinc-700 border-gray-300 rounded-lg p-3 text-right focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:text-zinc-800"
+            className="w-full font-serif text-[14px] h-[42px] font-bold border text-zinc-700 border-gray-300 rounded-lg p-3 text-right focus:outline-none focus:ring-2 focus:ring-yellow-400 focus:text-zinc-800"
             placeholder="۰"
           />
-          <span className="absolute left-3 text-gray-500 text-[10px] font-medium">
-            سوت
+          <span className="absolute left-4 text-gray-500 text-[10px] font-medium">
+           سو
+           <span className="absolute top-[-6px] left-[-4px]">ت</span>
           </span>
         </div>
 

@@ -12,12 +12,12 @@ export const FeeInfo = () => {
     <div className="text-sm text-gray-600 mt-4 flex justify-between mb-10 pb-5 border-b border-gray-200">
       <span
         dir="rtl"
-        className="bg-gray-50 py-0.5 px-2 rounded-md text-sm font-bold text-zinc-800">
+        className="bg-gray-50 py-0.5 px-2 rounded-md text-[12px] tracking-wider font-bold text-zinc-800">
         {feeAmount.toLocaleString("fa-IR")}{" "}
         <span className="font-medium text-xs text-gray-500">ریال</span>
       </span>
 
-      <span className="font-medium text-sm">:کارمزد خرید</span>
+      <span className="font-medium text-[12px]">:کارمزد خرید</span>
     </div>
   );
 };
